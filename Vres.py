@@ -26,6 +26,13 @@ parser.add_argument('folder', nargs='?', default='.', help='Target folder')
 parser.add_argument('-r', '--recursive', action='store_true', help='Search recusibly')
 args = parser.parse_args()
 
+def get_video_stream(probe):
+    for stream in probe.get('streams', []):
+        if stream.get('codec_type') == 'video':
+            return stream
+    return None
+
+
 def scan_folder(folder):
     for i in os.listdir(folder):
         path = os.path.join(folder, i)
@@ -33,9 +40,19 @@ def scan_folder(folder):
             if args.recursive:
                 scan_folder(path)
         elif i.split(".")[-1].lower() in video_formats:
-            probe = ffmpeg.probe(path)
+            try:
+                probe = ffmpeg.probe(path)
+            except ffmpeg.Error as e:
+                print(f"Title: {path}")
+                print(f"Error probing file: {e}")
+                continue
+
+            video_stream = get_video_stream(probe)
             print(f"Title: {path}")
-            print(calres(probe['streams'][0]['width'],probe['streams'][0]['height']))
-                
+            if video_stream and 'width' in video_stream and 'height' in video_stream:
+                print(calres(video_stream['width'], video_stream['height']))
+            else:
+                print("Unknown video stream or missing resolution info")
+
 
 scan_folder(args.folder)
