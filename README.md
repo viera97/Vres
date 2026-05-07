@@ -50,6 +50,12 @@ uv sync
 # Install FFmpeg (Ubuntu/Debian)
 sudo apt install ffmpeg
 
+(Arch)
+sudo pacman -Sy ffmpeg
+
+(Fedora)
+sudo dnf install -S ffmpeg
+
 # Install FFmpeg (macOS)
 brew install ffmpeg
 
