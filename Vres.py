@@ -33,6 +33,14 @@ def get_video_stream(probe):
     return None
 
 
+def get_resolution(stream):
+    if not stream:
+        return None, None
+    width = stream.get('width') or stream.get('coded_width')
+    height = stream.get('height') or stream.get('coded_height')
+    return width, height
+
+
 def scan_folder(folder):
     for i in os.listdir(folder):
         path = os.path.join(folder, i)
@@ -48,9 +56,10 @@ def scan_folder(folder):
                 continue
 
             video_stream = get_video_stream(probe)
+            width, height = get_resolution(video_stream)
             print(f"Title: {path}")
-            if video_stream and 'width' in video_stream and 'height' in video_stream:
-                print(calres(video_stream['width'], video_stream['height']))
+            if width and height:
+                print(calres(width, height))
             else:
                 print("Unknown video stream or missing resolution info")
 
